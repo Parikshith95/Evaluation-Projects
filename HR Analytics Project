@@ -1,0 +1,78 @@
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+
+import numpy as np
+import pandas as pd
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+train.head()
+
+
+train.isnull().any()
+
+stopword = set(STOPWORDS)
+
+wordcloud = WordCloud(background_color = 'white', stopwords = stopword).generate(str(train['department']))
+
+plt.rcParams['figure.figsize'] = (12, 8)
+print(wordcloud)
+plt.imshow(wordcloud)
+plt.title('Most Popular Departments', fontsize = 30)
+plt.axis('off')
+plt.show()
+
+train['is_promoted'].value_counts()
+
+
+size = [53538, 1270]
+colors = ['magenta', 'brown']
+labels = "Awards Won", "NO Awards Won"
+
+my_circle = plt.Circle((0, 0), 0.7, color = 'white')
+
+plt.rcParams['figure.figsize'] = (9, 9)
+plt.pie(size, colors = colors, labels = labels, shadow = True, autopct = '%.2f%%')
+plt.title('Showing a Percentage of employees who won awards', fontsize = 30)
+p = plt.gcf()
+p.gca().add_artist(my_circle)
+plt.legend()
+plt.show()
+
+
+size = [35517, 19291]
+labels = "Not Met KPI > 80%", "Met KPI > 80%"
+colors = ['violet', 'grey']
+explode = [0, 0.1]
+
+plt.rcParams['figure.figsize'] = (8, 8)
+plt.pie(size, labels = labels, colors = colors, explode = explode, shadow = True, autopct = "%.2f%%")
+plt.title('A Pie Chart Representing Gap in Employees in terms of KPI', fontsize = 30)
+plt.axis('off')
+plt.legend()
+plt.show()
+
+train['previous_year_rating'].value_counts().sort_values().plot.bar(color = 'violet', figsize = (15, 7))
+plt.title('Distribution of Previous year rating of the Employees', fontsize = 30)
+plt.xlabel('Ratings', fontsize = 15)
+plt.ylabel('count')
+plt.show()
+
+size = [30446, 23220, 1142]
+colors = ['yellow', 'red', 'lightgreen']
+labels = "Others", "Sourcing", "Reffered"
+
+my_circle = plt.Circle((0, 0), 0.7, color = 'white')
+
+plt.rcParams['figure.figsize'] = (9, 9)
+plt.pie(size, colors = colors, labels = labels, shadow = True, autopct = '%.2f%%')
+plt.title('Showing share of different Recruitment Channels', fontsize = 30)
+p = plt.gcf()
+p.gca().add_artist(my_circle)
+plt.legend()
+plt.show()
+
