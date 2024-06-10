@@ -1,0 +1,136 @@
+def pplot(df,i):
+plt.figure(figsize=(20,5))
+plt.subplot(1,3,1)
+sns.histplot(x=i,data=df,kde=True)
+plt.subplot(1,3,2)
+sns.regplot(x=i,y=’W’,data=df)
+plt.subplot(1,3,3)
+sns.boxplot(y=i,data=df)
+plt.show()
+
+sns.heatmap(df.isnull().sum().to_frame())
+
+df.info()
+
+W,R,AB,H,2B,3B,HR,BB,SO,SB,RA,ER,ERA,CG,SHO,SV,E
+95,724,5575,1497,300,42,139,383,973,104,641,601,3.73,2,8,56,88
+83,696,5467,1349,277,44,156,439,1264,70,700,653,4.07,2,12,45,86
+81,669,5439,1395,303,29,141,533,1157,86,640,584,3.67,11,10,38,79
+76,622,5533,1381,260,27,136,404,1231,68,701,643,3.98,7,9,37,101
+74,689,5605,1515,289,49,151,455,1259,83,803,746,4.64,7,12,35,86
+93,891,5509,1480,308,17,232,570,1151,88,670,609,3.8,7,10,34,88
+87,764,5567,1397,272,19,212,554,1227,63,698,652,4.03,3,4,48,93
+81,713,5485,1370,246,20,217,418,1331,44,693,646,4.05,0,10,43,77
+80,644,5485,1383,278,32,167,436,1310,87,642,604,3.74,1,12,60,95
+78,748,5640,1495,294,33,161,478,1148,71,753,694,4.31,3,10,40,97
+88,751,5511,1419,279,32,172,503,1233,101,733,680,4.24,5,9,45,119
+86,729,5459,1363,278,26,230,486,1392,121,618,572,3.57,5,13,39,85
+85,661,5417,1331,243,21,176,435,1150,52,675,630,3.94,2,12,46,93
+76,656,5544,1379,262,22,198,478,1336,69,726,677,4.16,6,1
+
+
+import sqlite3
+import pandas as pd
+
+conn = sqlite3.connect('lahman2016.sqlite')
+
+query = '''select * from Teams
+inner join TeamsFranchises
+on Teams.franchID == TeamsFranchises.franchID
+where Teams.G >= 150 and TeamsFranchises.active == 'Y';
+'''
+
+teams_df = pd.DataFrame(Teams)
+teams_df.head(5)
+
+Teams = conn.execute(query).fetchall()
+
+cols = ['yearID','lgID','teamID','franchID','divID',
+        'Rank','G','Ghome','W','L','DivWin','WCWin',
+        'LgWin','WSWin','R','AB','H','2B','3B','HR',
+        'BB','SO','SB','CS','HBP','SF','RA','ER','ERA',
+        'CG','SHO','SV','IPouts','HA','HRA','BBA','SOA',
+        'E','DP','FP','name','park','attendance','BPF',
+        'PPF','teamIDBR','teamIDlahman45','teamIDretro',
+        'franchID','franchName','active','NAassoc']
+teams_df.columns = cols
+
+ yearID lgID teamID  franchID divID  Rank    G  Ghome   W   L   ...     \
+0    1961   AL    LAA       ANA  None     8  162   82.0  70  91   ...      
+1    1962   AL    LAA       ANA  None     3  162   81.0  86  76   ...      
+
+  attendance  BPF  PPF teamIDBR  teamIDlahman45  teamIDretro  franchID  \
+0     603510  111  112      LAA             LAA          LAA       ANA   
+1    1144063   97   97      LAA             LAA          LAA       ANA   
+
+                      franchName  active  NAassoc  
+0  Los Angeles Angels of Anaheim       Y     None  
+1  Los Angeles Angels of Anaheim       Y     None  
+
+[2 rows x 52 columns]
+
+df['SO'] = df['SO'].fillna(df['SO'].median())
+df['DP'] = df['DP'].fillna(df['DP'].median())
+
+plt.scatter(df['yearID'],df['W'],c=df['win_bins'])
+plt.title('wins per year')
+plt.xlabel('year')
+plt.ylabel('wins')
+
+runs_per_year = {}
+games_per_year = {}
+
+for i, row in df.iterrows():
+    year = row['yearID']
+    runs = row['R']
+    games = row['G']
+    if year in runs_per_year:
+        runs_per_year[year] = runs_per_year[year] + runs
+        games_per_year[year] = games_per_year[year] + games
+    else:
+        runs_per_year[year] = runs
+        games_per_year[year] = games
+
+def assign_decade(year):
+    if year < 1920:
+        return 1910
+    elif year >= 1920 and year <= 1929:
+        return 1920
+    elif year >= 1930 and year <= 1939:
+        return 1930
+    elif year >= 1940 and year <= 1949:
+        return 1940
+    elif year >= 1950 and year <= 1959:
+        return 1950
+    elif year >= 1960 and year <= 1969:
+        return 1960
+    elif year >= 1970 and year <= 1979:
+        return 1970
+    elif year >= 1980 and year <= 1989:
+        return 1980
+    elif year >= 1990 and year <= 1999:
+        return 1990
+    elif year >= 2000 and year <= 2009:
+        return 2000
+    elif year >= 2010:
+        return 2010
+
+df['decade_label'] = df['yearID'].apply(assign_decade)
+
+decade_df = pd.get_dummies(df['decade_label'],prefix='decade')
+decade_df.head()
+
+fig = plt.figure(figsize=(12,6))
+
+ax1 = fig.add_subplot(1,2,1)
+ax2 = fig.add_subplot(1,2,2)
+
+ax1.scatter(df['R_per_game'],df['W'],c='blue')
+ax1.set_title('runs per game vs wins')
+ax1.set_ylabel('wins')
+ax1.set_xlabel('runs per game')
+
+ax2.scatter(df['RA_per_game'],df['W'],c='red')
+ax2.set_title('runs allowed per game vs wins')
+ax2.set_xlabel('runs allowed per game')
+
