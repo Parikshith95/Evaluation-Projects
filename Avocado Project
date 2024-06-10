@@ -1,0 +1,51 @@
+import pandas as pd
+dataset = pd.read_csv("avocado.csv")
+dataset.head()
+
+dataset.tail()
+
+
+dataset['Date']=pd.to_datetime(dataset['Date'])
+dataset['Month']=dataset['Date'].apply(lambda x:x.month)
+dataset['Day']=dataset['Date'].apply(lambda x:x.day)
+dataset.head()
+
+byMonth = dataset.groupby("Month").mean()
+plt.figure(figsize=(17,8),dpi=100)
+plt.plot(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"],byMonth['AveragePrice'])
+plt.title('Average Price Per Month')
+
+byDay = dataset.groupby("Day").mean()
+plt.figure(figsize=(17,8),dpi=100)
+byDay['AveragePrice'].plot()
+plt.title('Average Price Per Day')
+
+import seaborn as sns
+
+byRegion=dataset.groupby('region').mean()
+byRegion.sort_values(by=['AveragePrice'], ascending=False, inplace=True)
+plt.figure(figsize=(17,8),dpi=100)
+sns.barplot(x = byRegion.index,y=byRegion["AveragePrice"],data = byRegion,palette='rocket')
+plt.xticks(rotation=90)
+plt.xlabel('Region')
+plt.ylabel('Average Price')
+plt.title('Average Price According to Region')
+
+plt.figure(figsize=(15,10),dpi=100)
+dataset["AveragePrice"].plot(kind="hist",color="blue",bins=30,grid=True,alpha=0.65,label="Average Price")
+plt.legend()
+plt.xlabel("Average Price")
+plt.title("Average Price Distribution")
+plt.show()
+
+dataset_vif = dataset.copy()
+dataset_vif.drop(columns=['Date','type','region'],inplace = True)
+
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+from statsmodels.tools.tools import add_constant
+
+Xf = add_constant(dataset_vif)
+pd.Series([variance_inflation_factor(Xf.values, i) 
+               for i in range(Xf.shape[1])], 
+              index=Xf.columns)
+
