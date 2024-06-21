@@ -1,0 +1,130 @@
+import pandas as pd # for data wrangling purpose
+import numpy as np # Basic computation library
+import seaborn as sns # For Visualization 
+import matplotlib.pyplot as plt # ploting package
+%matplotlib inline
+import warnings # Filtering warnings
+warnings.filterwarnings('ignore')
+
+
+df=pd.read_csv('loan_prediction.csv')
+
+print('No of Rows:',df.shape[0])
+print('No. of Columns:',df.shape[1])
+df.head()
+
+df.duplicated().sum() # This check any if any duplicated entry exit in dataset 
+
+plt.figure(figsize=(10,8))
+sns.heatmap(df.isnull())
+
+AxesSubplot:>
+
+missing_values = df.isnull().sum().sort_values(ascending = False)
+percentage_missing_values =(missing_values/len(df))*100
+print(pd.concat([missing_values, percentage_missing_values], axis =1, keys =['Missing Values', '% Missing data']))
+
+for i in category:
+    print(i)
+    print(df[i].value_counts())
+    print('='*100)
+
+sns.set_palette('gist_rainbow_r')
+plt.figure(figsize=(20,20),facecolor='white')
+plotnumber=1
+category=['Gender','Married','Dependents','Education','Self_Employed',
+          'Loan_Amount_Term','Property_Area','Credit_History','Loan_Status']
+for i in category:
+    if plotnumber<=9:
+        ax=plt.subplot(3,3,plotnumber)
+        sns.countplot(df[i])
+        plt.xlabel(i,fontsize=20)
+    plotnumber+=1
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(14,6))
+plt.subplot(1,2,1)
+sns.boxplot( y='LoanAmount', data=df,color='cyan')
+plt.ylabel('Loan Amount',fontsize=15)
+plt.subplot(1,2,2)
+sns.distplot(df['LoanAmount'], color='b')
+plt.xlabel('Loan Amount',fontsize=15)
+plt.tight_layout()
+plt.show()
+
+df['Dependents'].fillna(df['Dependents'].mode()[0], inplace=True)
+df['Gender'].fillna(df['Gender'].mode()[0],inplace=True)
+df['Married'].fillna(df['Married'].mode()[0],inplace=True)
+
+plt.figure(figsize=(12,8))
+sns.heatmap(df.describe(),linewidths = 0.1,fmt='0.1f',annot = True,cmap='PiYG')
+
+sns.countplot('Loan_Status',data=df,ax=ax[1])
+ax[1].set_title('Loan Status',fontsize=20,fontweight ='bold')
+ax[1].set_xlabel("Loan Status",fontsize=18,fontweight ='bold')
+plt.show()
+
+plt.rcParams["figure.autolayout"] = True
+sns.set_palette('husl')
+f,ax=plt.subplots(1,2,figsize=(16,8))
+df['Gender'].value_counts().plot.pie(explode=[0,0.1],autopct='%2.1f%%',
+                                          textprops ={ 'fontweight': 'bold','fontsize':13}, ax=ax[0],shadow=True)
+ax[0].set_title('Gender', fontsize=20,fontweight ='bold')
+ax[0].set_ylabel('')
+sns.countplot('Gender',hue="Loan_Status",data=df,ax=ax[1])
+ax[1].set_title('Gender Vs Loan Status',fontsize=20,fontweight ='bold')
+ax[1].set_xlabel("Loan Status",fontsize=18,fontweight ='bold')
+plt.xticks(fontsize=14,fontweight ='bold')
+plt.tight_layout()
+plt.show()
+
+plt.xticks(fontsize=14,fontweight ='bold')
+plt.tight_layout()
+plt.show()
+
+ax[0].set_ylabel('')
+sns.countplot('Education',hue="Loan_Status",data=df,ax=ax[1])
+ax[1].set_title('Education Vs Loan Status',fontsize=20,fontweight ='bold')
+ax[1].set_xlabel("Education",fontsize=18,fontweight ='bold')
+plt.xticks(fontsize=14,fontweight ='bold')
+plt.tight_layout()
+plt.show()
+
+print("\033[1m"+'Percentage Data Loss :'+"\033[0m",((614-577)/614)*100,'%')
+
+from scipy.stats import zscore
+z = np.abs(zscore(df))
+threshold = 3
+df1 = df[(z<3).all(axis = 1)]
+
+print ("Shape of the dataframe before removing outliers: ", df.shape)
+print ("Shape of the dataframe after removing outliers: ", df1.shape)
+print ("Percentage of data loss post outlier removal: ", (df.shape[0]-df1.shape[0])/df.shape[0]*100)
+
+
+df[skew] = scaler.fit_transform(df[skew].values)
+df[skew].head()
+
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+vif= pd.DataFrame()
+vif['VIF']= [variance_inflation_factor(df.values,i) for i in range(df.shape[1])]
+vif['Features']= df.columns
+vif
+
+from sklearn.preprocessing import StandardScaler
+scaler= StandardScaler()
+X_scale = scaler.fit_transform(X)
+
+print('Best accuracy is', maxAccu ,'on Random_state', maxRS)
+
+plt.figure(figsize = (8,6))
+plt.plot(range(25), rmse_val, color='blue', linestyle='dashed', marker='o', markerfacecolor='green', markersize=10)
+
+parameter = {  'bootstrap': [True], 'max_depth': [5, 10,20,40,50,60], 
+              'max_features': ['auto', 'log2'], 
+              'criterion':['gini','entropy'],
+              'n_estimators': [5, 10, 15 ,25,50,60,70]}
+
+from sklearn.model_selection import GridSearchCV
+
