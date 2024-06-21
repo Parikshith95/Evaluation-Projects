@@ -1,0 +1,144 @@
+import datetime
+import argparse
+import requests
+import urllib
+import pickle
+import csv
+import re
+
+ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
+RAW_DIR = os.path.join(ROOT_DIR, "raw_source_files")
+RESOURCES_DIR = os.path.join(ROOT_DIR, "resources")
+SOURCE_DB_BIN_DIR = os.path.join(ROOT_DIR, "source_databases")
+SOURCE_DB_CSV_DIR = os.path.join(ROOT_DIR, "source_databases_csv")
+OUTPUT_DIR = os.path.join(ROOT_DIR, "output_database")
+DIRs = {"raw": RAW_DIR, "resource": RESOURCES_DIR, "src_bin": SOURCE_DB_BIN_DIR,
+		"src_csv": SOURCE_DB_CSV_DIR, "root": ROOT_DIR, "output": OUTPUT_DIR}
+
+FUEL_THESAURUS_DIR				= os.path.join(RESOURCES_DIR, "fuel_type_thesaurus")
+HEADER_NAMES_THESAURUS_FILE		= os.path.join(RESOURCES_DIR, "header_names_thesaurus.csv")
+COUNTRY_NAMES_THESAURUS_FILE	= os.path.join(RESOURCES_DIR, "country_names_thesaurus.csv")
+COUNTRY_INFORMATION_FILE		= os.path.join(RESOURCES_DIR, "country_information.csv")
+MASTER_PLANT_CONCORDANCE_FILE	= os.path.join(RESOURCES_DIR, "master_plant_concordance.csv")
+WEPP_CONCORDANCE_FILE 			= os.path.join(RESOURCES_DIR, "master_wepp_concordance.csv")
+SOURCE_THESAURUS_FILE			= os.path.join(RESOURCES_DIR, "sources_thesaurus.csv")
+GENERATION_FILE      			= os.path.join(RESOURCES_DIR, "generation_by_country_by_fuel_2014.csv")
+
+class PowerPlant(object):
+	"""Class representing a power plant."""
+	def __init__(self, plant_idnr, plant_name, plant_country,
+		plant_owner=NO_DATA_UNICODE,
+		plant_nat_lang=NO_DATA_UNICODE,
+		plant_capacity=NO_DATA_NUMERIC,
+		plant_cap_year=NO_DATA_NUMERIC,
+		plant_source=NO_DATA_OTHER,
+		plant_source_url=NO_DATA_UNICODE,
+		plant_location=NO_DATA_OTHER,
+		plant_coord_source=NO_DATA_UNICODE,
+		plant_primary_fuel=NO_DATA_UNICODE,
+		plant_other_fuel=NO_DATA_SET,
+		plant_generation=NO_DATA_OTHER,
+		plant_commissioning_year=NO_DATA_NUMERIC,
+		plant_estimated_generation_gwh=NO_DATA_NUMERIC,
+		plant_wepp_id=NO_DATA_UNICODE
+
+if not plant_other_fuel:
+			setattr(self, 'other_fuel', NO_DATA_SET.copy())
+		elif type(plant_other_fuel) is set:
+			setattr(self, 'other_fuel', plant_other_fuel)
+		else:
+			print("Error trying to create plant with fuel of type {0}.".format(plant_other_fuel))
+			setattr(self, 'other_fuel', NO_DATA_SET.copy())
+
+		# set data for other attributes
+		object_attributes = {'source': plant_source, 'location': plant_location}
+
+		for attribute, input_parameter in object_attributes.iteritems():
+			if attribute == 'source' and type(input_parameter) is not SourceObject:
+				if type(input_parameter) is str:
+					setattr(self, attribute, format_string(input_parameter))
+				elif type(input_parameter) is unicode:
+					setattr(self, attribute, format_string(input_parameter, encoding=None))
+				else:
+					setattr(self, attribute, NO_DATA_UNICODE)
+			elif attribute == 'location' and type(input_parameter) is not LocationObject:
+				setattr(self, attribute, LocationObject())
+			else:  # everything OK
+				setattr(self, attribute, input_parameter)
+
+def __str__(self):
+		"""String representation of the PowerPlant."""
+		try:
+			s = ['{',
+				'  id: ' + str(self.idnr),
+				'  name: ' + str(self.name),
+				'  primary fuel: ' + str(self.primary_fuel),
+				'  owner: ' + str(self.owner),
+				'  capacity: ' + str(self.capacity),
+				'  has_location: ' + str(bool(self.location)),
+				'}']
+			return '\n'.join(s)
+		except:
+			return self.__repr__()
+
+class SourceObject(object):
+
+class CountryObject(object):
+	def __init__(self, primary_name, iso_code, iso_code2,
+			geo_name, carma_name, iea_name, automated,
+			use_geo, wri_data_built_in):
+
+class LocationObject(object):
+	def __init__(self, description=u"", latitude=None, longitude=None):
+		"""
+		Class holding information on the location (lat, lon) of a powerplant.
+
+def __nonzero__(self):
+		"""Boolean checking."""
+		return (self.longitude is not None) and (self.latitude is not None)
+    
+
+if type(self.gwh) is int:
+			self.gwh = float(self.gwh)
+
+for gen in gen_list:
+		if not gen:
+			continue
+
+return fuel_thesaurus
+
+if as_set:
+
+try:
+		if encoding is None:
+			unicode_value = value
+		else:
+
+country = plant.country
+		capacity = plant.capacity
+
+def _dict_row(powerplant):
+		ret = {}
+
+else:
+			ret['latitude'] = NO_DATA_NUMERIC
+			ret['longitude'] = NO_DATA_NUMERIC
+
+if not row['generation_gwh_2016']:
+				row['generation_gwh_2016'] = None
+			if not row['generation_gwh_2017']:
+
+raise Exception('Error handling sqlite database')
+	if return_connection:
+
+`capacity_mw` (number): electrical generating capacity in megawatts
+ `latitude` (number): geolocation in decimal degrees; WGS84 (EPSG:4326)
+ `longitude` (number): geolocation in decimal degrees; WGS84 (EPSG:4326)
+ `primary_fuel` (text): energy source used in primary electricity generation or export
+ `other_fuel1` (text): energy source
+
+except:
+				row['latitude'] = None
+				row['longitude'] = None
+			try:
+
