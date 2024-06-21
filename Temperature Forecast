@@ -1,0 +1,86 @@
+import pandas as pd # for data wrangling purpose
+import numpy as np # Basic computation library
+import seaborn as sns # For Visualization 
+import matplotlib.pyplot as plt # ploting package
+%matplotlib inline
+import warnings # Filtering warnings
+warnings.filterwarnings('ignore')
+
+df=pd.read_csv('temperature.csv')
+
+print('No of Rows:',df.shape[0])
+print('No of Columns:',df.shape[1])
+pd.set_option('display.max_columns', None) # This will enable us to see truncated columns
+df.head()
+
+Sort columns by datatypes
+df.columns.to_series().groupby(df.dtypes).groups
+
+{float64: ['station', 'Present_Tmax', 'Present_Tmin', 'LDAPS_RHmin', 'LDAPS_RHmax', 'LDAPS_Tmax_lapse', 'LDAPS_Tmin_lapse', 'LDAPS_WS', 'LDAPS_LH', 'LDAPS_CC1', 'LDAPS_CC2', 'LDAPS_CC3', 'LDAPS_CC4', 'LDAPS_PPT1', 'LDAPS_PPT2', 'LDAPS_PPT3', 'LDAPS_PPT4', 'lat', 'lon', 'DEM', 'Slope', 'Solar radiation', 'Next_Tmax', 'Next_Tmin'], object: ['Date']}
+
+df.duplicated().sum() # This will check if any duplicate entry or duplicate row with same value exist
+
+print("We had {} Rows and {} Columns before dropping null values.".format(df.shape[0], df.shape[1]))
+df.dropna(inplace=True)
+print("We have {} Rows and {} Columns after dropping null values.".format(df.shape[0], df.shape[1]))
+
+df['Date']=pd.to_datetime(df['Date'])
+df['Day']=df['Date'].apply(lambda x:x.day)
+df['Month']=df['Date'].apply(lambda x:x.month)
+df['Year']=df['Date'].apply(lambda x:x.year)
+df.head()
+
+import reverse_geocoder as rg
+import pprint
+df['State']= geo_names[0].apply(lambda x:x.get('admin1'))
+df['City']=geo_names[0].apply(lambda x:x.get('name'))
+
+df.head()
+
+plt.figure(figsize=(12,5))
+plt.subplot(1,2,1)
+sns.histplot(df['Present_Tmax'],kde=True,color='r')
+plt.subplot(1,2,2)
+sns.histplot(df['Present_Tmin'],kde=True,color='m')
+plt.show()
+
+plt.figure(figsize=(20,10))
+sns.set_style('whitegrid')
+sns.pointplot(x='station', y='Present_Tmax', data=df, hue='Year',join=False)
+plt.title('Present Maximum Temperature Per Year for each Station', fontsize=22, fontweight='bold')
+plt.xlabel('Station ID',{'fontsize':15,'fontweight' :'bold'})
+plt.ylabel('Present Maximum Temperature',{'fontsize':15,'fontweight' :'bold'})
+plt.xticks(fontsize=16,fontweight ='bold')
+plt.yticks(fontsize=16,fontweight ='bold')
+plt.legend(fontsize=14)
+
+<matplotlib.legend.Legend at 0x17cae7cc9a0>
+
+sns.barplot(x=df['Month'], y=df['Solar radiation'])
+
+sns.violinplot(x=df['Next_Tmax'], y=df['Solar radiation'])
+
+plt.figure(figsize=(12,5))
+plt.subplot(1,2,1)
+sns.histplot(df['Next_Tmax'],kde=True,color='b')
+plt.subplot(1,2,2)
+sns.histplot(df['Next_Tmin'],kde=True,color='r')
+plt.show()
+
+plt.subplot(2,2,4)
+plt.title('Solar radiation Vs next_day 4th 6-hour Precipitation',fontsize=14, fontweight='bold')
+sns.scatterplot(y='LDAPS_PPT4',x='Solar radiation',data=df,color="orange")
+plt.xticks(fontsize=12,fontweight ='bold')
+plt.yticks(fontsize=12,fontweight ='bold')
+plt.show()
+
+plt.figure(figsize=(15,6))
+plt.subplot(1,2,1)
+sns.histplot(df['LDAPS_RHmax'],kde=True,color='r')
+plt.title('Maximum relative humidity (%)',fontsize=14, fontweight='bold')
+plt.subplot(1,2,2)
+sns.histplot(df['LDAPS_RHmin'],kde=True,color='b')
+plt.title('Minimum relative humidity (%)',fontsize=14, fontweight='bold')
+print('Minimum RHmax is {} % and Maximum RHmax is {} %'.format(df['LDAPS_RHmax'].min(),df['LDAPS_RHmax'].max()))
+print('Minimum RHmin is {} % and Maximum RHmin is {} %'.format(df['LDAPS_RHmin'].min(),df['LDAPS_RHmin'].max()))
+
